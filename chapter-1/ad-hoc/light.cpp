@@ -2,22 +2,27 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
+#include <vector>
+#include <algorithm>
+
 using namespace std;
 #define THRESHOLD 0.0001
 
 struct point {
-    float x;
-    float y;
+    double x;
+    double y;
 };
 
 struct film {
     point initial_point;
     point end_point;
-    float coefficient;
+    double coefficient;
 };
 
 void sortPointsByXAscending(film *f);
 void sortFilmsByXAscending(film* films, int filmCount);
+
+bool filmCompare(const film& f1, const film& f2);
 
 int main() {
     int cases;
@@ -25,15 +30,34 @@ int main() {
     for(int i = 0; i < cases; i++) {
         int segment_count;
         scanf("%d", &segment_count);
-        film films[segment_count];
+        vector<film> films;
+        vector<double> vals;
         for(int j = 0; j < segment_count; j++) {
-            film* cur_film = &films[j];
-            scanf("%f %f %f %f %f", &cur_film->initial_point.x, &cur_film->initial_point.y, &cur_film->end_point.x,
-                                    &cur_film->end_point.y, &cur_film->coefficient);
+            film f;
+            film* cur_film = &f;
+            scanf("%lf %lf %lf %lf %lf", &cur_film->initial_point.x, &cur_film->initial_point.y, &cur_film->end_point.x,
+                  &cur_film->end_point.y, &cur_film->coefficient);
             sortPointsByXAscending(cur_film);
+            films.push_back(f);
+            vals.push_back(f.initial_point.x);
+            vals.push_back(f.end_point.x);
         }
-        sortFilmsByXAscending(films, segment_count);
-        
+        sort(vals.begin(), vals.end());
+        sort(films.begin(), films.end(), filmCompare);
+        printf("%lu\n", vals.size() + 1);
+        printf("-inf %.3f 1.000\n", vals[0]);
+        for(int j = 1; j < vals.size(); j++) {
+            double light = 1.0;
+            for(int k = 0; k < films.size(); k++) {
+                if(films[k].initial_point.x <= vals[j-1] && films[k].end_point.x >= vals[j]) {
+                    light *= films[k].coefficient;
+                }
+            }
+            printf("%.3f %.3f %.3f\n", vals[j-1], vals[j], light);
+        }
+        printf("%.3f +inf 1.000\n", vals[vals.size()-1]);
+        if(i != cases - 1)
+            printf("\n");
     }
     return 0;
 }
@@ -46,15 +70,6 @@ void sortPointsByXAscending(film *f) {
     }
 }
 
-// Lazy bubble sort
-void sortFilmsByXAscending(film* films, int filmCount) {
-    for(int i = 0; i < filmCount; i++) {
-        for(int j = i; j < filmCount; j++) {
-            if(films[i].initial_point.x > films[j].initial_point.x) {
-                film f = films[i];
-                films[i] = films[j];
-                films[j] = f;
-            }
-        }
-    }
+bool filmCompare(const film& f1, const film& f2) {
+    return f1.initial_point.x < f2.initial_point.x;
 }

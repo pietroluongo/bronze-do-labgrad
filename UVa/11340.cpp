@@ -1,44 +1,51 @@
-//From https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&page=show_problem&category=121&problem=2315
-#include <iostream>
-#include <cstdio>
-#include <cstring>
-#include <vector>
-#include <algorithm>
-#include <string>
 #include <map>
+#include <cstdio>
+#include <string>
+#include <cstring>
+#include <iostream>
+
 using namespace std;
 
-int main() {
-    int test_count;
-    cin >> test_count;
-    scanf("%*[\n]");
-    for(int i = 0; i < test_count; i++) {
-        map<char, int> values;
-        int char_count;
-        cin >> char_count;
-        scanf("%*[\n]");
-        // Fill values map
-        for(int j = 0; j < char_count; j++) {
+// 11340 - Newspaper
+
+
+int main(void){
+    int N, i, valorFinal;
+
+    scanf("%d", &N);
+
+    for(i = 0; i < N; i++){
+        map<char,int> tabela;
+        map<char,int>::iterator it;
+        int K, j;
+        scanf("%d\n", &K);
+        valorFinal = 0;
+        for(j = 0; j < K; j++){
             char c;
-            int p;
-            scanf("%c %d\n", &c, &p);
-            values[c] = p;
+            int valor;
+            scanf("%c %d\n", &c, &valor);
+            tabela[c] = valor;
         }
-        int line_count;
-        cin >> line_count;
-        scanf("%*[\n]");
-        int cost = 0;
-        for(int j = 0; j < line_count; j++) {
-            string input;
-            getline(cin, input);
-            for(int k = 0; k < input.length(); k++) {
-                // If key is present in map
-                if(values.count(input[k]) > 0) {
-                    cost += values[input[k]];
+        int qtdLines;
+        scanf("%d\n", &qtdLines);
+        for(j = 0; j < qtdLines; j++){
+            char linha[10010];
+            string l;
+            getline(cin, l);
+            strcpy(linha, l.c_str());
+            int k;
+            for(k = 0; k < strlen(linha); k++){
+                char cLinha = linha[k];
+                it = tabela.find(cLinha);
+                if(it != tabela.end()){
+                    valorFinal += tabela[cLinha];
                 }
             }
         }
-        printf("%.2f$\n", (float)cost/100.0f);
+        printf("%02.2lf$\n", (double)valorFinal/100);
+
     }
+
+
     return 0;
 }
